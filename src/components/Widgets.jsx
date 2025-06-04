@@ -5,8 +5,8 @@ export default function Widgets() {
 
   return (
     <main id='widgets'>
-      <WeatherWidget />
       <CalendarWidget />
+      <WeatherWidget />
     </main>
   );
 };

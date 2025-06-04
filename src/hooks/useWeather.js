@@ -1,50 +1,46 @@
 import { useEffect, useState } from 'react';
+import weatherCodes from '../data/weatherCodes.json'; // Adjust path as needed
 
 export default function useWeather(coords) {
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; // To avoid state updates if component unmounts
-    let intervalId;
+    if (!coords) return;
 
-    const fetchWeather = () => {
-      let url;
+    const fetchWeather = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/weather?lat=${coords.latitude}&lon=${coords.longitude}`);
+        if (!response.ok) throw new Error('Failed to fetch weather');
+        const data = await response.json();
 
-      // if (coords) {
-      //   url = `http://localhost:4000/api/weather?location=${coords.latitude},${coords.longitude}`;
-      // } else {
-        // Default to New York if no coords
-        url = 'http://localhost:4000/api/weather?location=40.7128,-74.0060';
-      // }
+        // Get weather code from API response
+        const code = data.weathercode || data.current_weather?.weathercode;
 
-      fetch(url)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch weather data');
-          return res.json();
-        })
-        .then(data => {
-          if (isMounted) {
-            setWeather(data);
-            setError(null); // clear previous errors on success
-          }
-        })
-        .catch(err => {
-          if (isMounted) {
-            setError(err.message);
-          }
-        });
+        // Determine day or night info — optional
+        // Here we assume day info; for better accuracy, you can check timestamp if available
+        const timeOfDay = 'day'; // or 'night' depending on time
+
+        // Lookup weather code info from JSON
+        const codeInfo = weatherCodes[code]?.[timeOfDay] || {
+          description: 'Unknown weather',
+          image: null,
+        };
+
+        // Attach code info to weather object
+        const weatherWithInfo = {
+          ...data,
+          description: codeInfo.description,
+          icon: codeInfo.image,
+        };
+
+        setWeather(weatherWithInfo);
+      } catch (err) {
+        setError(err.message || 'Unexpected error');
+      };
     };
 
-    fetchWeather(); // initial fetch
-
-    // Set interval to fetch every 5 minutes
-    intervalId = setInterval(fetchWeather, 300000); // 300,000 ms = 5 minutes
-
-    return () => {
-      isMounted = false; // clean up flag
-      clearInterval(intervalId); // clear interval on unmount or coords change
-    };
+    fetchWeather();
   }, [coords]);
 
   return { weather, error };
