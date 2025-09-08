@@ -1,5 +1,6 @@
 import WeatherWidget from './WeatherWidget';
 import CalendarWidget from './CalendarWidget';
+import SonosWidget from './SonosWidget';
 
 export default function Widgets() {
 
@@ -7,6 +8,7 @@ export default function Widgets() {
     <main id='widgets'>
       <CalendarWidget />
       <WeatherWidget />
+      <SonosWidget />
     </main>
   );
 };

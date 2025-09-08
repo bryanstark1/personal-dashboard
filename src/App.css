@@ -25,6 +25,7 @@ main {
   flex-direction: row;
   padding: 1rem;
   width: fit-content;
+  height: 230px;
 }
 
 #clock .meridiem {
@@ -50,9 +51,16 @@ main {
 /* CALENDAR END */
 
 /* WEATHER START */
+#weather-widget {
+  min-width: 380px;
+}
 #weather-widget .weather-primary-info {
   margin-right: 1rem;
 }
-
-
 /* WEATHER END */
+
+/* SONOS START */
+#sonos-widget {
+  min-width: 380px;
+}
+/* SONOS END */
